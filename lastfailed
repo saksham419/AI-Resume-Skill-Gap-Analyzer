@@ -1,0 +1,7 @@
+{
+  "tests/test_modules.py::test_jd_required_classification": true,
+  "tests/test_modules.py::test_perfect_match": true,
+  "tests/test_modules.py::test_zero_match": true,
+  "tests/test_modules.py::test_partial_match": true,
+  "tests/test_modules.py::test_recommendations_present": true
+}

@@ -1,0 +1,12 @@
+[
+  "tests/test_modules.py::test_basic_skill_extraction",
+  "tests/test_modules.py::test_cpp_extraction",
+  "tests/test_modules.py::test_empty_text",
+  "tests/test_modules.py::test_hyphen_normalization",
+  "tests/test_modules.py::test_jd_no_signals",
+  "tests/test_modules.py::test_jd_required_classification",
+  "tests/test_modules.py::test_partial_match",
+  "tests/test_modules.py::test_perfect_match",
+  "tests/test_modules.py::test_recommendations_present",
+  "tests/test_modules.py::test_zero_match"
+]

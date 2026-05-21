@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Resume Skill Gap Analyzer — MITS</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- ── Top Header ─────────────────────────────────────── -->
+  <header class="top-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="college-logo">
+  <img src="/static/mits-logo.png" alt="MITS Logo" class="mits-logo">
+</div>
+        <div class="header-text">
+          <h1 class="site-title">AI Resume Skill Gap Analyzer</h1>
+          <p class="site-sub">Department of Centre For Artificial Intelligence — Madhav Institute of Technology &amp; Science (MITS)</p>
+          <p class="site-meta">2nd Year, 4th Semester (2025–26)</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="theme-label">Theme</span>
+        <label class="theme-toggle" title="Toggle theme">
+          <input type="checkbox" id="theme-checkbox" onchange="toggleTheme(this.checked)">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Nav ────────────────────────────────────────────── -->
+  <nav class="main-nav">
+    <div class="nav-inner">
+      <a href="#analyzer" class="nav-link active" onclick="setNav(this)">Analyzer</a>
+      <a href="#about"    class="nav-link"         onclick="setNav(this)">About</a>
+    </div>
+  </nav>
+
+  <!-- ── Main ───────────────────────────────────────────── -->
+  <main>
+
+    <!-- ══ ANALYZER SECTION ══════════════════════════════ -->
+    <section id="analyzer" class="page-section">
+      <div class="section-intro">
+        <h2 class="section-title">Analyze your resume</h2>
+        <p class="section-desc">Upload your resume and paste a job description. Our AI will extract skills, identify gaps, and give you actionable recommendations.</p>
+      </div>
+
+      <!-- Upload form -->
+      <div class="form-grid" id="upload-section">
+
+        <div class="card">
+          <div class="card-label">Step 1 — Upload resume</div>
+          <div class="drop-zone" id="drop-zone">
+            <div class="drop-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 12 15 15"/>
+              </svg>
+            </div>
+            <p class="drop-text">Drag &amp; drop PDF here</p>
+            <p class="drop-sub">or</p>
+            <label class="btn-outline btn-sm" onclick="event.stopPropagation(); fileInput.click();">Browse file</label>
+            <input type="file" id="file-input" accept=".pdf" hidden>
+            <p class="file-name" id="file-name">No file selected</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Step 2 — Paste job description</div>
+          <textarea id="jd-input" placeholder="Paste the full job description here...&#10;&#10;Include requirements, responsibilities, and preferred skills for best results."></textarea>
+          <div class="char-count" id="char-count">0 characters</div>
+        </div>
+
+        <div class="card full-width analyze-card">
+          <button class="btn-primary" id="analyze-btn" onclick="runAnalysis()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Analyze Skill Gap
+          </button>
+          <p class="hint">Your resume is processed locally and never stored permanently</p>
+        </div>
+
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-section hidden" id="loading-section">
+        <div class="loader-wrap">
+          <div class="spinner"></div>
+          <p class="loader-text" id="loader-text">Extracting skills from resume...</p>
+          <p class="loader-sub">This usually takes 5–10 seconds</p>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-section hidden" id="results-section">
+
+        <div class="score-card card">
+          <div class="score-top">
+            <div>
+              <div class="score-label">Match Score</div>
+              <div class="score-value" id="score-value">0%</div>
+              <div class="score-verdict" id="score-verdict"></div>
+            </div>
+            <div class="score-stats" id="score-meta"></div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="results-grid">
+          <div class="card">
+            <div class="card-title green">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Your skills
+              <span class="count-badge green-badge" id="resume-count"></span>
+            </div>
+            <div class="skill-list" id="resume-skills"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title green">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Matched required
+              <span class="count-badge green-badge" id="matched-count"></span>
+            </div>
+            <div class="skill-list" id="matched-skills"></div>
+          </div>
+
+          <div class="card full-width">
+            <div class="card-title red">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Critical gaps
+              <span class="count-badge red-badge" id="critical-count"></span>
+            </div>
+            <p class="card-sub">Must-have skills missing from your resume</p>
+            <div class="gap-list" id="critical-gaps"></div>
+          </div>
+
+          <div class="card full-width">
+            <div class="card-title amber">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Minor gaps
+              <span class="count-badge amber-badge" id="minor-count"></span>
+            </div>
+            <p class="card-sub">Preferred skills — good to learn but not blocking</p>
+            <div class="gap-list" id="minor-gaps"></div>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn-outline" onclick="resetForm()">Analyze another resume</button>
+          <button class="btn-primary" id="download-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download report
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Error -->
+      <div class="error-banner hidden" id="error-banner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="error-text"></span>
+      </div>
+
+    </section>
+
+    <!-- ══ ABOUT SECTION ══════════════════════════════════ -->
+    <section id="about" class="page-section hidden">
+      <div class="section-intro">
+        <h2 class="section-title">About this project</h2>
+        <p class="section-desc">Academic software engineering project developed at MITS Gwalior.</p>
+      </div>
+
+      <div class="about-grid">
+
+        <div class="card about-card">
+          <div class="about-label">Project</div>
+          <div class="about-value">AI Resume Skill Gap Analyzer</div>
+          <div class="about-label" style="margin-top:12px">Course</div>
+          <div class="about-value">Artificial Intelligence &amp; Machine Learning</div>
+        </div>
+
+        <div class="card about-card">
+          <div class="about-section-title">Developer</div>
+          <div class="person-row">
+            <div class="avatar">ST</div>
+            <div>
+              <div class="person-name">Saksham Tundele</div>
+              <div class="person-meta">BTAM24O1058</div>
+            </div>
+            <div class="avatar">PM</div>
+            <div>
+              <div class="person-name">Prince Malviya</div>
+              <div class="person-meta">BTAM24O1048</div>
+            </div>
+            <div class="avatar">TM</div>
+            <div>
+              <div class="person-name">Tushar Malviya</div>
+              <div class="person-meta">BTAM24O1067</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card about-card">
+          <div class="about-section-title">Supervisor</div>
+          <div class="person-row">
+            <div class="avatar accent-avatar">AS</div>
+            <div>
+              <div class="person-name">Dr. Anu Sayal</div>
+              <div class="person-meta">Associate Professor, Centre For AI</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card about-card">
+          <div class="about-section-title">Department</div>
+          <div class="about-value">Department of Centre For Artificial Intelligence</div>
+          <div class="about-section-title" style="margin-top:16px">College</div>
+          <div class="about-value">Madhav Institute of Technology &amp; Science – DU, Gwalior</div>
+        </div>
+
+        <div class="card about-card full-width">
+          <div class="about-section-title">How it works</div>
+          <div class="how-grid">
+            <div class="how-step">
+              <div class="how-num">01</div>
+              <div class="how-title">PDF parsing</div>
+              <div class="how-desc">PyPDF2 and pdfminer extract raw text from your resume PDF reliably across layouts.</div>
+            </div>
+            <div class="how-step">
+              <div class="how-num">02</div>
+              <div class="how-title">Skill extraction</div>
+              <div class="how-desc">spaCy NLP + keyword matching identifies technical skills, tools, and soft skills.</div>
+            </div>
+            <div class="how-step">
+              <div class="how-num">03</div>
+              <div class="how-title">JD analysis</div>
+              <div class="how-desc">Job description is parsed and skills are classified as required or preferred.</div>
+            </div>
+            <div class="how-step">
+              <div class="how-num">04</div>
+              <div class="how-title">Gap scoring</div>
+              <div class="how-desc">Semantic similarity + exact matching produces a match score and ranked gap list.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card about-card full-width dev-note">
+          <strong>Developer's Note:</strong> This tool uses NLP-based skill extraction to suggest gap areas. Results are indicative — always verify against the actual job posting and consult career advisors for important applications.
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer>
+    <p>© 2025 Madhav Institute of Technology &amp; Science — Developed by Saksham Tundele, Prince Malviya & Tushar Malviya</p>
+  </footer>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
